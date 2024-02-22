@@ -1,0 +1,16 @@
+{
+  "header": {
+    "location": "LOS ANGELES, INC - 4502",
+    "number":"+000 000 0000",
+    "time":"9AM - 10PM",
+    "select-lang":"Select lang",
+    "english":"English",
+    "german":"German",
+    "spanish":"Spanish",
+    "home":"Home",
+    "about-us":"About us",
+    "services":"Services",
+    "trainers":"Trainers",
+    "contact-us":"Contact us"
+  }
+}
