@@ -3,9 +3,10 @@ import type { GetStaticProps, InferGetStaticPropsType } from "next";
 
 import { useTranslation } from "next-i18next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import AOS from "aos"
 import "aos/dist/aos.css";
+import i18nextConfig from "../next-i18next.config";
 
 type Props = {
   // Add custom props here
@@ -21,11 +22,9 @@ const Homepage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
     router.push({ pathname, query }, asPath, { locale: newLocale });
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const clientSideLanguageChange = (newLocale: string) => {
-    i18n.changeLanguage(newLocale);
-  };
-
+  const [showMenu,setShowMenu] = useState(false);
+  
+  const currentLocale = router.locale ?? i18nextConfig.i18n.defaultLocale;
   useEffect(() => {
     AOS.init();
   }, []);
@@ -64,9 +63,9 @@ const Homepage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
                       id="lang"
                       onChange={(e) => onToggleLanguageClick(e.target.value)}
                     >
-                      <option value="en">{t('header.home')}</option>
-                      <option value="de">{t('header.german')}</option>
-                      <option value="es">{t('header.spanish')}</option>
+                      <option selected={currentLocale == 'en'} value="en">{t('header.english')}</option>
+                      <option selected={currentLocale == 'de'}  value="de">{t('header.german')}</option>
+                      <option selected={currentLocale == 'es'}  value="es">{t('header.spanish')}</option>
                     </select>
                     <i className="uil uil-angle-down" />
                   </div>
@@ -80,17 +79,17 @@ const Homepage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
                 <img loading="lazy" src="images/logo.png" alt="" />
               </a>
             </div>
-            <div className="links">
-              <a href="#">{t('header.home')}</a>
-              <a href="#about">{t('header.about-us')}</a>
-              <a href="#service">{t('header.services')}</a>
-              <a href="#trainers">{t('header.trainers')}</a>
+            <div className={showMenu ? "links active" : "links"}>
+              <a href="#" onClick={() => setShowMenu(pre => !pre)}>{t('header.home')}</a>
+              <a href="#about" onClick={() => setShowMenu(pre => !pre)}>{t('header.about-us')}</a>
+              <a href="#service" onClick={() => setShowMenu(pre => !pre)}>{t('header.services')}</a>
+              <a href="#trainers" onClick={() => setShowMenu(pre => !pre)}>{t('header.trainers')}</a>
             </div>
             <div className="m-flex">
-              <a href="#contact">
+              <a href="#contact" onClick={() => setShowMenu(pre => !pre)}>
                 <button className="empty">{t('header.contact-us')}</button>
               </a>
-              <i className="uil uil-align-center-alt menu" />
+              <i className={showMenu ? "uil uil-align-center-alt menu uil-multiply" :"uil uil-align-center-alt menu"} onClick={() => setShowMenu(pre => !pre)} />
             </div>
           </div>
         </header>
@@ -104,30 +103,28 @@ const Homepage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
                 data-aos-duration={1000}
                 data-aos-easing="ease-in-out"
               >
-                <span>join over 9,000+ students</span>
-                <h1>WELCOME TO chon-ji school</h1>
+                <span>{t('home.subtitle')}</span>
+                <h1>{t('home.title')}</h1>
                 <p>
-                  Morbi eleifend tortor vitae sapien laoreet feugiat. Aliquam
-                  dictum vulputate sapien eu laoreet. Aliquam purus est,
-                  molestie et sagittis sit amet, sagittis in magna.
+                  {t('home.description')}
                 </p>
                 <form className="subsribe">
                   <input type="text" placeholder="example@example.com" />
-                  <button>Subscribe</button>
+                  <button>{t('home.subscribe')}</button>
                 </form>
               </div>
               <div className="info">
                 <div data-text="9k">
-                  <p>9k</p>
-                  <span>Student Joined</span>
+                  <p>{t('home.info-value-1')}</p>
+                  <span>{t('home.info-title-1')}</span>
                 </div>
                 <div data-text={"04"}>
-                  <p>4</p>
-                  <span>Best trainers</span>
+                  <p>{t('home.info-value-1')}</p>
+                  <span>{t('home.info-title-1')}</span>
                 </div>
                 <div data-text="8k">
-                  <p>8k</p>
-                  <span>Happy Students</span>
+                  <p>{t('home.info-value-1')}</p>
+                  <span>{t('home.info-title-1')}</span>
                 </div>
               </div>
             </div>
@@ -178,8 +175,8 @@ const Homepage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
                   data-aos-duration={1000}
                   data-aos-easing="ease-in-out"
                 >
-                  <span>INTRODUCTION</span>
-                  <h2>Let's know about our fight chon-ji school</h2>
+                  <span>{t('about.title')}</span>
+                  <h2>{t('about.subtitle')}</h2>
                 </div>
                 <p
                   data-aos="fade-up"
@@ -189,11 +186,7 @@ const Homepage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
                   data-aos-easing="ease-in-out"
                   className="tbb-1"
                 >
-                  Fight School has specialized in martial arts since 1986 and
-                  has one of the most innovative programs in the nation. We
-                  teach martial arts because we love it — not because we want to
-                  make money on you. Unlike other martial arts schools, we do
-                  not require you to sign long term contracts.
+                  {t('about.description')}
                 </p>
                 <div
                   className="cta"
@@ -204,7 +197,7 @@ const Homepage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
                   data-aos-easing="ease-in-out"
                 >
                   <a href="#">
-                    <button>find out more</button>
+                    <button>{t('about.find-out-more')}</button>
                   </a>
                   <a href="#">
                     <div className="call">
@@ -212,8 +205,8 @@ const Homepage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
                         <i className="uil uil-outgoing-call" />
                       </div>
                       <div>
-                        <span>have any questions?</span>
-                        <p>+387 65 737 788</p>
+                        <span>{t('about.have-any-questions')}</span>
+                        <p>{t('about.number')}</p>
                       </div>
                     </div>
                   </a>
@@ -233,15 +226,13 @@ const Homepage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
               data-aos-easing="ease-in-out"
             >
               <div className="title">
-                <span>Services</span>
+                <span>{t('service.title')}</span>
                 <h2>
-                  our best schedule <br /> programs
+                {t('service.subtitle')}
                 </h2>
               </div>
               <p>
-                We teach martial arts because we love it — not because we want
-                to make money on you. Unlike other martial arts schools, we do
-                not require you to sign long term contracts.
+              {t('service.description')}
               </p>
             </div>
             <div className="cards">
@@ -258,12 +249,11 @@ const Homepage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
                 </div>
                 <div className="body">
                   <span>
-                    <i className="uil uil-clock" /> 5AM - 6PM
+                    <i className="uil uil-clock" /> {t('service.card-1.time')}
                   </span>
-                  <h3>teen &amp; adult karate</h3>
+                  <h3>{t('service.card-1.title')}</h3>
                   <p>
-                    It is an unfortunate fact that many martial artists suffer
-                    from knee pain.
+                  {t('service.card-1.subtitle')}
                   </p>
                 </div>
               </div>
@@ -280,12 +270,11 @@ const Homepage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
                 </div>
                 <div className="body">
                   <span>
-                    <i className="uil uil-clock" /> 5AM - 6PM
+                    <i className="uil uil-clock" /> {t('service.card-2.time')}
                   </span>
-                  <h3>teen &amp; adult karate</h3>
+                  <h3>{t('service.card-2.title')}</h3>
                   <p>
-                    It is an unfortunate fact that many martial artists suffer
-                    from knee pain.
+                  {t('service.card-2.subtitle')}
                   </p>
                 </div>
               </div>
@@ -302,12 +291,11 @@ const Homepage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
                 </div>
                 <div className="body">
                   <span>
-                    <i className="uil uil-clock" /> 5AM - 6PM
+                    <i className="uil uil-clock" /> {t('service.card-3.time')}
                   </span>
-                  <h3>teen &amp; adult karate</h3>
+                  <h3>{t('service.card-3.title')}</h3>
                   <p>
-                    It is an unfortunate fact that many martial artists suffer
-                    from knee pain.
+                  {t('service.card-3.subtitle')}
                   </p>
                 </div>
               </div>
@@ -324,8 +312,8 @@ const Homepage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
               data-aos-duration={1000}
               data-aos-easing="ease-in-out"
             >
-              <span>trainers</span>
-              <h2>our instructort</h2>
+              <span>{t('trainer.title')}</span>
+              <h2>{t('trainer.subtitle')}</h2>
             </div>
             <div className="cards">
               <div
@@ -341,8 +329,8 @@ const Homepage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
                 </div>
                 <div className="body">
                   <div>
-                    <h3>User name</h3>
-                    <p>kids instructor</p>
+                    <h3>{t('trainer.frame-1.title')}</h3>
+                    <p>{t('trainer.frame-1.subtitle')}</p>
                   </div>
                   <div className="social">
                     <a href="#">
@@ -370,8 +358,8 @@ const Homepage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
                 </div>
                 <div className="body">
                   <div>
-                    <h3>User name</h3>
-                    <p>kids instructor</p>
+                    <h3>{t('trainer.frame-2.title')}</h3>
+                    <p>{t('trainer.frame-2.subtitle')}</p>
                   </div>
                   <div className="social">
                     <a href="#">
@@ -399,8 +387,8 @@ const Homepage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
                 </div>
                 <div className="body">
                   <div>
-                    <h3>User name</h3>
-                    <p>kids instructor</p>
+                    <h3>{t('trainer.frame-3.title')}</h3>
+                    <p>{t('trainer.frame-3.subtitle')}</p>
                   </div>
                   <div className="social">
                     <a href="#">
@@ -428,8 +416,8 @@ const Homepage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
         >
           <div className="container">
             <div className="title center">
-              <span>Contact</span>
-              <h2>get your free pass</h2>
+              <span>{t('contract.title')}</span>
+              <h2>{t('contract.subtitle')}</h2>
             </div>
             <div className="form-grid">
               <form action="#" method="post">
@@ -441,7 +429,7 @@ const Homepage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
                     placeholder=" "
                     required
                   />
-                  <label htmlFor="fname">Full name</label>
+                  <label htmlFor="fname">{t('contract.fname')}</label>
                 </div>
                 <div className="row">
                   <div className="fild">
@@ -452,7 +440,7 @@ const Homepage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
                       placeholder=" "
                       required
                     />
-                    <label htmlFor="email">Email</label>
+                    <label htmlFor="email">{t('contract.email')}</label>
                   </div>
                   <div className="fild">
                     <input
@@ -462,16 +450,16 @@ const Homepage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
                       placeholder=" "
                       required
                     />
-                    <label htmlFor="phone">Phone</label>
+                    <label htmlFor="phone">{t('contract.phone')}</label>
                   </div>
                 </div>
                 <textarea
                   name="msg"
-                  placeholder="Type your message....."
+                  placeholder={t('contract.msg')}
                   defaultValue={""}
                 />
                 <button>
-                  Get in touch <i className="uil uil-arrow-up-right" />
+                  {t('contract.get-in-touch')} <i className="uil uil-arrow-up-right" />
                 </button>
               </form>
               <iframe
@@ -493,8 +481,7 @@ const Homepage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
                   <img src="images/logo.png" alt="" />
                 </div>
                 <p>
-                  Fight School has specialized in martial arts since 1986 and
-                  has one of the most innovative programs in the nation.
+                  {t('footer.description')}
                 </p>
                 <div className="social">
                   <a href="#">
@@ -509,7 +496,7 @@ const Homepage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
                 </div>
               </div>
               <div className="link-block">
-                <h3>Contact</h3>
+                <h3>{t('footer.contact')}</h3>
                 <div className="urls">
                   <a href="#">
                     <i className="uil uil-outgoing-call" />
@@ -524,8 +511,7 @@ const Homepage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
                     <i className="uil uil-envelope" /> info@email.ba
                   </a>
                   <p>
-                    <i className="uil uil-map-marker" /> Stefana Dečanskog bb,
-                    ATC local 16, Bijeljina BiH
+                    <i className="uil uil-map-marker" /> {t('footer.address')}
                   </p>
                   <a href="#">
                     <i className="uil uil-link-alt" />
@@ -534,19 +520,18 @@ const Homepage = (_props: InferGetStaticPropsType<typeof getStaticProps>) => {
                 </div>
               </div>
               <div className="link-block">
-                <h3>Newsletter</h3>
+                <h3>{t('footer.newsletter')}</h3>
                 <p>
-                  Subscribe to our Newsletter to be updated.We promise not to
-                  spam
+                {t('footer.newsletter-des')}
                 </p>
                 <form className="subsribe">
                   <input type="text" placeholder="example@example.com" />
-                  <button>Subscribe</button>
+                  <button>{t('footer.subscribe')}</button>
                 </form>
               </div>
             </div>
           </div>
-          <div className="copy">© Copyright 2024 All Rights Reserved</div>
+          <div className="copy">{t('footer.copyright')}</div>
         </footer>
       </div>
     </>
